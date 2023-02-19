@@ -6,7 +6,7 @@ import 'package:latlong2/latlong.dart';
 import 'secrets.dart';
 
 Future<void> main() async {
-  await Supabase.initialize(url: url, anonKey: anonKey);
+  await Supabase.initialize(url: URL, anonKey: ANON_KEY);
 
   runApp(const MyApp());
 }
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                     urlTemplate:
                         "https://api.mapbox.com/styles/v1/randreu28/clebruq3o001201r15xtwdylg/tiles/256/{z}/{x}/{y}@2x?access_token={access_token}",
                     additionalOptions: const {
-                      "access_token": mapboxKey,
+                      "access_token": MAPBOX_KEY,
                     },
                   ),
                 ],
