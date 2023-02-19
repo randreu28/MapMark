@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+import 'secrets.dart';
+
+Future<void> main() async {
+  await Supabase.initialize(url: url, anonKey: anonKey);
+
   runApp(const MyApp());
 }
 
