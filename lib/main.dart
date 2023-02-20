@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mapmark/home.dart';
 import 'package:mapmark/intro.dart';
-import 'package:mapmark/mapathon.dart';
+import 'package:mapmark/map.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'secrets.dart';
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/": (context) => const Home(),
           "/intro": (context) => const Intro(),
-          "/mapathon": (context) => const Mapathon(),
+          "/map": (context) => const Map(),
         });
   }
 }
