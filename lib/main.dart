@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mapmark/home.dart';
+import 'package:mapmark/intro.dart';
 import 'package:mapmark/mapathon.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,9 +19,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'MapMark',
         theme: ThemeData.dark(),
-        initialRoute: "/",
+        initialRoute: "/intro",
         routes: {
-          "/": (context) => const Home(),
+          "/": (context) => const Placeholder(),
+          "/intro": (context) => const Intro(),
           "/mapathon": (context) => const Mapathon(),
         });
   }
