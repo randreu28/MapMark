@@ -40,7 +40,7 @@ class _IntroScreensState extends State<IntroScreens> {
   ];
 
   void onDone() {
-    Navigator.pushNamed(context, "/");
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
   }
 
   ButtonStyle myButtonStyle() {
