@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mapmark/models.dart';
 import 'package:mapmark/secrets.dart';
 
 class Map extends StatelessWidget {
@@ -10,7 +11,12 @@ class Map extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mapathon = ModalRoute.of(context)?.settings.arguments as Mapathon;
+
     return Scaffold(
+        appBar: AppBar(
+          title: Text(mapathon.name),
+        ),
         floatingActionButton: const FloatingActionButton(
             onPressed: null, child: Icon(Icons.camera_alt)),
         body: Stack(

@@ -17,7 +17,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("MapMark"),
+        title: const Text("Available Mapathons"),
       ),
       body: StreamBuilder(
         stream: db.from('mapathons').select().asStream(),
@@ -50,6 +50,15 @@ class _HomeState extends State<Home> {
                     "From ${dateFormat.format(mapathon.startDate)} to ${dateFormat.format(mapathon.endDate)}",
                   ),
                   textColor: mapathon.hasStarted ? null : Colors.grey,
+                  onTap: () {
+                    if (mapathon.hasStarted) {
+                      Navigator.pushNamed(
+                        context,
+                        "/map",
+                        arguments: mapathon,
+                      );
+                    }
+                  },
                 );
               },
             );
