@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
                   subtitle: Text(
                     "From ${dateFormat.format(mapathon.startDate)} to ${dateFormat.format(mapathon.endDate)}",
                   ),
-                  textColor: mapathon.hasStarted ? Colors.grey : null,
+                  textColor: mapathon.hasStarted ? null : Colors.grey,
                 );
               },
             );

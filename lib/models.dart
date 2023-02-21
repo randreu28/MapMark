@@ -14,7 +14,7 @@ class Mapathon {
   });
 
   bool get hasStarted {
-    return startDate.isAfter(DateTime.now());
+    return startDate.isBefore(DateTime.now());
   }
 
   bool get hasEnded {
