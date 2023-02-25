@@ -41,6 +41,7 @@ dependencies:
   latlong2: ^0.8.1
   intro_slider: ^4.2.0
   intl: ^0.18.0
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:
