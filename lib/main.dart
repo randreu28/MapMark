@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mapmark/screens/add_point.dart';
 import 'package:mapmark/screens/home.dart';
 import 'package:mapmark/screens/intro.dart';
 import 'package:mapmark/screens/map.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
           "/": (context) => const Home(),
           "/intro": (context) => const Intro(),
           "/map": (context) => const Map(),
+          "/add-point": (context) => const AddPoint(),
         });
   }
 }

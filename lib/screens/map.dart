@@ -82,7 +82,14 @@ class _MapState extends State<Map> {
         ),
         floatingActionButton: FloatingActionButton(
             onPressed: () {
-              /* TODO: Add new point */
+              if (currentPosition == null) {
+                getPosition();
+              } else {
+                Navigator.of(context).pushNamed("/add-point", arguments: {
+                  "mapathon": mapathon,
+                  "currentPosition": currentPosition!
+                });
+              }
             },
             child: const Icon(Icons.camera_alt)),
         body: Stack(
