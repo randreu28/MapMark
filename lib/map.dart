@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:mapmark/models.dart';
 import 'package:mapmark/secrets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:mapmark/helpers.dart';
 
 class Map extends StatefulWidget {
   const Map({
@@ -15,6 +16,47 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
+  LatLng? currentPosition;
+
+  getPosition() async {
+    try {
+      final position = await requestPosition();
+
+      position.forEach(
+        (position) {
+          setState(() {
+            currentPosition = LatLng(position.latitude, position.longitude);
+          });
+        },
+      );
+    } catch (error) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("There has been an error"),
+            content: Text(error.toString()),
+            actions: [
+              /* TODO: Add an action to invoke phone settings https://stackoverflow.com/questions/44709434/how-do-i-invoke-the-phone-settings-from-flutter-dart-application */
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getPosition());
+  }
+
   @override
   Widget build(BuildContext context) {
     final mapathon = ModalRoute.of(context)?.settings.arguments as Mapathon;
@@ -58,7 +100,7 @@ class _MapState extends State<Map> {
                     minZoom: 5,
                     maxZoom: 16,
                     zoom: 13,
-                    center: LatLng(41.429795, 2.194170),
+                    center: currentPosition ?? LatLng(41.429795, 2.194170),
                   ),
                   children: [
                     TileLayer(
@@ -69,33 +111,10 @@ class _MapState extends State<Map> {
                       },
                     ),
                     MarkerLayer(
-                      markers: [
-                        for (Point point in snapshot.data!) ...[
-                          Marker(
-                            point: point.coordinates,
-                            builder: (context) {
-                              return const Icon(
-                                size: 30,
-                                /* TODO: Make the icon's end point actually point at the specific loction. Maybe a local transformation based on the icon's size */
-                                Icons.location_on,
-                                color: Colors.teal,
-                              );
-                            },
-                          ),
-                        ],
-                        /* TODO: Make this following marker the user's current position */
-                        Marker(
-                          point: LatLng(41.429795, 2.194170),
-                          builder: (context) {
-                            return const Icon(
-                              Icons.location_history,
-                              /* TODO: Make the icon more evidently a representation of the user's current position (pulsing circle?)*/
-                              color: Colors.teal,
-                            );
-                          },
-                        )
-                      ],
-                    )
+                        markers: computeMarkers(
+                      data: snapshot.data!,
+                      currentPosition: currentPosition,
+                    ))
                   ],
                 );
               },
@@ -103,4 +122,38 @@ class _MapState extends State<Map> {
           ],
         ));
   }
+}
+
+computeMarkers({required data, required LatLng? currentPosition}) {
+  final List<Marker> markers = [];
+
+  for (Point point in data) {
+    markers.add(
+      Marker(
+        point: point.coordinates,
+        builder: (context) {
+          return const Icon(
+            size: 30,
+            /* TODO: Make the icon's end point actually point at the specific loction. Maybe a local transformation based on the icon's size */
+            Icons.location_on,
+            color: Colors.teal,
+          );
+        },
+      ),
+    );
+  }
+
+  if (currentPosition != null) {
+    markers.add(Marker(
+      point: currentPosition,
+      builder: (context) {
+        return const Icon(
+          Icons.location_history,
+          /* TODO: Make the icon more evidently a representation of the user's current position (pulsing circle?)*/
+          color: Colors.teal,
+        );
+      },
+    ));
+  }
+  return markers;
 }
