@@ -135,6 +135,10 @@ class _UploadPictureState extends State<UploadPicture> {
   Widget build(BuildContext context) {
     final db = Supabase.instance.client;
 
+    navigateToSucessPage() {
+      Navigator.of(context).pushNamed("/success");
+    }
+
     uploadPic() async {
       try {
         final now = DateTime.now().toString();
@@ -156,15 +160,36 @@ class _UploadPictureState extends State<UploadPicture> {
           "mapathon": widget.mapathon.id,
           "picture": publicUrl
         });
-      } catch (err) {
-        print(err);
+
+        navigateToSucessPage();
+      } catch (error) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("There has been an error"),
+              content: Text(
+                error.toString(),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
     }
 
+/* TODO: Show a more understanding screen for the user */
     return Scaffold(
       appBar: AppBar(title: const Text('Display the Picture')),
-      floatingActionButton:
-          FloatingActionButton(onPressed: uploadPic, child: Icon(Icons.upload)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: uploadPic, child: const Icon(Icons.upload)),
       body: Image.file(File(widget.imagePath)),
     );
   }

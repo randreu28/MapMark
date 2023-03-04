@@ -4,6 +4,7 @@ import 'package:mapmark/screens/add_point.dart';
 import 'package:mapmark/screens/home.dart';
 import 'package:mapmark/screens/intro.dart';
 import 'package:mapmark/screens/map.dart';
+import 'package:mapmark/screens/success.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'secrets.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           "/intro": (context) => const Intro(),
           "/map": (context) => const Map(),
           "/add-point": (context) => TakePicture(camera: camera),
+          "/success": (context) => const Success(),
         });
   }
 }
