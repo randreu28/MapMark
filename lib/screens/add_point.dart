@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models.dart';
 
@@ -132,8 +133,38 @@ class UploadPicture extends StatefulWidget {
 class _UploadPictureState extends State<UploadPicture> {
   @override
   Widget build(BuildContext context) {
+    final db = Supabase.instance.client;
+
+    uploadPic() async {
+      try {
+        final now = DateTime.now().toString();
+        final picture = File(widget.imagePath);
+
+        //Upload image to bucket
+        await db.storage.from('pictures').upload(
+              now,
+              picture,
+            );
+
+        //Retrieve the public url of the image in the bucket
+        final String publicUrl = db.storage.from('pictures').getPublicUrl(now);
+
+        //Add point
+        await db.from("points").insert({
+          "latitude": widget.currentPosition.latitude,
+          "longitude": widget.currentPosition.longitude,
+          "mapathon": widget.mapathon.id,
+          "picture": publicUrl
+        });
+      } catch (err) {
+        print(err);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Display the Picture')),
+      floatingActionButton:
+          FloatingActionButton(onPressed: uploadPic, child: Icon(Icons.upload)),
       body: Image.file(File(widget.imagePath)),
     );
   }
