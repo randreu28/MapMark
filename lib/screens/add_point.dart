@@ -54,16 +54,16 @@ class TakePictureState extends State<TakePicture> {
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          if (_controller.value.isInitialized == false) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (_controller.value.isInitialized == false) {
             return const Center(
               child: Text(
                   "We couldn't access to your camera. Please enable it in your device's configuration",
                   textAlign: TextAlign.center),
             );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return CameraPreview(_controller);
           }
         },
       ),
