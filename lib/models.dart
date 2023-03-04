@@ -49,6 +49,6 @@ class Point {
       : id = data["id"],
         mapathonID = data["mapathon"],
         createdAt = DateTime.parse(data["created_at"]),
-        coordinates = LatLng(data["position_x"], data["position_y"]),
+        coordinates = LatLng(data["latitude"], data["longitude"]),
         picture = data["picture"];
 }
