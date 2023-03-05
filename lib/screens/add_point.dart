@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -133,6 +134,34 @@ class UploadPicture extends StatefulWidget {
 class _UploadPictureState extends State<UploadPicture> {
   bool isLoading = false;
   final db = Supabase.instance.client;
+  final dateFormat = DateFormat('dd/MM/yyyy');
+
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  String? titleValidator;
+  String? descriptionValidator;
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  handleUpload() {
+    if (titleController.text.isNotEmpty &&
+        descriptionController.text.isNotEmpty) {
+      uploadPic();
+    } else {
+      setState(() {
+        titleController.text.isEmpty ? titleValidator = "Title required" : null;
+        descriptionController.text.isEmpty
+            ? descriptionValidator = "Description required"
+            : null;
+      });
+    }
+  }
 
   navigateToSucessPage() {
     Navigator.of(context).pushNamed("/success");
@@ -160,7 +189,9 @@ class _UploadPictureState extends State<UploadPicture> {
         "latitude": widget.currentPosition.latitude,
         "longitude": widget.currentPosition.longitude,
         "mapathon": widget.mapathon.id,
-        "picture": publicUrl
+        "picture": publicUrl,
+        "title": titleController.text,
+        "description": descriptionController.text
       });
 
       navigateToSucessPage();
@@ -192,13 +223,48 @@ class _UploadPictureState extends State<UploadPicture> {
 
   @override
   Widget build(BuildContext context) {
-/* TODO: Show a more understanding screen for the user */
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Picture')),
+      appBar: AppBar(title: const Text('Upload a point')),
       floatingActionButton: FloatingActionButton(
-          onPressed: isLoading ? null : uploadPic,
+          onPressed: isLoading ? null : handleUpload,
           child: const Icon(Icons.upload)),
-      body: Image.file(File(widget.imagePath)),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(children: [
+          ListTile(
+            title: Text(widget.mapathon.name),
+            subtitle: Text(
+              "From ${dateFormat.format(widget.mapathon.startDate)} to ${dateFormat.format(widget.mapathon.endDate)}",
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: 'Title',
+                errorText: titleValidator,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            child: TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: 'Description',
+                errorText: descriptionValidator,
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Center(child: Image.file(File(widget.imagePath), width: 200)),
+        ]),
+      ),
     );
   }
 }
