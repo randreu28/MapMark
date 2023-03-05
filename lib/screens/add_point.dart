@@ -131,65 +131,73 @@ class UploadPicture extends StatefulWidget {
 }
 
 class _UploadPictureState extends State<UploadPicture> {
+  bool isLoading = false;
+  final db = Supabase.instance.client;
+
+  navigateToSucessPage() {
+    Navigator.of(context).pushNamed("/success");
+  }
+
+  uploadPic() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      final now = DateTime.now().toString();
+      final picture = File(widget.imagePath);
+
+      //Upload image to bucket
+      await db.storage.from('pictures').upload(
+            now,
+            picture,
+          );
+
+      //Retrieve the public url of the image in the bucket
+      final String publicUrl = db.storage.from('pictures').getPublicUrl(now);
+
+      //Add point
+      await db.from("points").insert({
+        "latitude": widget.currentPosition.latitude,
+        "longitude": widget.currentPosition.longitude,
+        "mapathon": widget.mapathon.id,
+        "picture": publicUrl
+      });
+
+      navigateToSucessPage();
+    } catch (error) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("There has been an error"),
+            content: Text(
+              error.toString(),
+            ),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final db = Supabase.instance.client;
-
-    navigateToSucessPage() {
-      Navigator.of(context).pushNamed("/success");
-    }
-
-    uploadPic() async {
-      try {
-        final now = DateTime.now().toString();
-        final picture = File(widget.imagePath);
-
-        //Upload image to bucket
-        await db.storage.from('pictures').upload(
-              now,
-              picture,
-            );
-
-        //Retrieve the public url of the image in the bucket
-        final String publicUrl = db.storage.from('pictures').getPublicUrl(now);
-
-        //Add point
-        await db.from("points").insert({
-          "latitude": widget.currentPosition.latitude,
-          "longitude": widget.currentPosition.longitude,
-          "mapathon": widget.mapathon.id,
-          "picture": publicUrl
-        });
-
-        navigateToSucessPage();
-      } catch (error) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("There has been an error"),
-              content: Text(
-                error.toString(),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
-    }
-
 /* TODO: Show a more understanding screen for the user */
     return Scaffold(
       appBar: AppBar(title: const Text('Display the Picture')),
       floatingActionButton: FloatingActionButton(
-          onPressed: uploadPic, child: const Icon(Icons.upload)),
+          onPressed: isLoading ? null : uploadPic,
+          child: const Icon(Icons.upload)),
       body: Image.file(File(widget.imagePath)),
     );
   }
